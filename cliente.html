@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0b74ff" />
+<meta name="description" content="Cadastro de cliente Medical Spin" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon.png" />
+<link rel="apple-touch-icon" href="/icon-192.jpg" />
+<title>Cadastro de Cliente - Medical Spin</title>
+
+<style>
+:root {
+  --bg-primary: #f8fafc;
+  --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+  --surface: #ffffff;
+  --surface-hover: #f1f5f9;
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --accent: #0b74ff;
+  --accent-hover: #0860d9;
+  --danger: #ef4444;
+  --danger-hover: #dc2626;
+  --border: #e2e8f0;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --max-width: 520px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--bg-gradient);
+  min-height: 100vh;
+  padding: 24px 16px;
+  display: flex;
+  justify-content: center;
+  -webkit-font-smoothing: antialiased;
+}
+
+.card {
+  width: 100%;
+  max-width: var(--max-width);
+  background: var(--surface);
+  padding: 32px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.title::before {
+  content: '👤';
+  font-size: 28px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.group {
+  margin-bottom: 18px;
+}
+
+.field {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--border);
+  font-size: 15px;
+  transition: all 0.2s ease;
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+.field:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(11, 116, 255, 0.1);
+}
+
+button {
+  width: 100%;
+  padding: 14px 20px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 15px;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow);
+}
+
+button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button.btn-ghost {
+  background: transparent;
+  color: var(--accent);
+  border: 2px solid var(--border);
+  box-shadow: none;
+}
+
+button.btn-ghost:hover {
+  background: var(--surface-hover);
+  border-color: var(--accent);
+}
+
+.equip-list {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.equip-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+  font-size: 14px;
+  background: var(--surface-hover);
+  transition: all 0.2s ease;
+}
+
+.equip-item:hover {
+  border-color: var(--accent);
+  background: var(--surface);
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(4px);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  background: var(--surface);
+  padding: 28px;
+  border-radius: var(--radius);
+  width: 90%;
+  max-width: 480px;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.close {
+  float: right;
+  cursor: pointer;
+  font-size: 24px;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.close:hover {
+  color: var(--text-primary);
+}
+
+.validator {
+  position: absolute;
+  opacity: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 16px 12px;
+  }
+
+  .card {
+    padding: 24px;
+  }
+
+  .title {
+    font-size: 22px;
+  }
+}
+</style>
+</head>
+<body>
+
+<form class="card" id="equipForm" novalidate>
+  <div class="title">Cadastro de Cliente</div>
+  <div class="subtitle">Preencha corretamente os dados abaixo.</div>
+
+  <div class="group"><label>Razão Social</label><input class="field" name="razao_social" required></div>
+  <div class="group"><label>Nome Fantasia</label><input class="field" name="fantasia" required></div>
+  <div class="group"><label>CNPJ</label><input class="field" name="cnpj" required></div>
+  <div class="group"><label>Cidade</label><input class="field" name="cidade" required></div>
+
+  <div class="group">
+    <label>UF</label>
+    <select name="uf" class="field" required>
+      <option value="">Selecione</option> <option value="AC">AC</option> <option value="AL">AL</option> <option value="AP">AP</option> <option value="AM">AM</option> <option value="BA">BA</option> <option value="CE">CE</option> <option value="DF">DF</option> <option value="ES">ES</option> <option value="GO">GO</option> <option value="MA">MA</option> <option value="MT">MT</option> <option value="MS">MS</option> <option value="MG">MG</option> <option value="PA">PA</option> <option value="PB">PB</option> <option value="PR">PR</option> <option value="PE">PE</option> <option value="PI">PI</option> <option value="RJ">RJ</option> <option value="RN">RN</option> <option value="RS">RS</option> <option value="RO">RO</option> <option value="RR">RR</option> <option value="SC">SC</option> <option value="SE">SE</option> <option value="SP">SP</option> <option value="TO">TO</option>
+    </select>
+  </div>
+
+  <div class="group"><label>Telefone</label><input class="field" name="telefone" required></div>
+  <div class="group"><label>Email</label><input class="field" name="email" type="email" required></div>
+  <div class="group"><label>Responsável</label><input class="field" name="responsavel" required></div>
+
+  <button type="button" onclick="openModal()">➕ Adicionar Equipamento</button>
+  <div id="equipamentosPreview" class="equip-list"></div>
+
+  <input id="equipValidator" class="validator">
+
+  <button type="submit">✅ Cadastrar Cliente</button>
+</form>
+
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">×</span>
+    <h3 style="margin-top: 0; color: var(--text-primary);">Adicionar Equipamento</h3>
+
+    <div class="group"><label>Tipo</label><input id="equipTipo" class="field" value="Ressonância Magnética"></div>
+    <div class="group"><label>Fabricante</label> <select id="equipFabricante" name="equipFabricante" class="field compact" required > <option value="">Selecione</option> <option>Philips</option><option>GE HealthCare</option><option>Siemens Healthineers AG</option><option>Canon Medical Systems</option><option>Hitachi</option> </select></div>
+    <div class="group"><label>Modelo</label> <select id="equipModelo" name="equipModelo" class="field compact" required > <option value="">Selecione</option> <option>Achieva 1.5T</option><option>Intera/Achieva 1.5T</option><option>NT/Intera 1.0T</option><option>NT/Intera 0.5T</option><option>ACS-NT 1.5T</option><option>Achieva 3.0T</option><option>Multiva 1.5T</option><option>Prodiva1.5T</option><option>Ingenia Ambition 1.5T</option><option>Ingenia Elition 1.5T</option> </select></div>
+    <div class="group"><label>Nº Série</label><input id="equipSerie" class="field"></div>
+
+    <button type="button" onclick="adicionarEquipamento()">✅ Adicionar</button>
+  </div>
+</div>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('[v0] Service Worker registered'))
+      .catch(err => console.log('[v0] Service Worker registration failed:', err));
+  });
+}
+
+let equipamentos = [];
+const form = document.getElementById("equipForm");
+const validator = document.getElementById("equipValidator");
+
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+
+  if (equipamentos.length === 0) {
+    validator.setCustomValidity("Cadastre pelo menos 1 equipamento.");
+  } else {
+    validator.setCustomValidity("");
+  }
+
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+
+  const data = Object.fromEntries(new FormData(form));
+  data.equipamentos = equipamentos;
+
+  await fetch("https://n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io/webhook/cadastra-cliente", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+
+  alert("Cliente cadastrado com sucesso!");
+  form.reset();
+  equipamentos = [];
+  atualizarPreview();
+});
+
+function openModal(){ modal.style.display="flex"; }
+function closeModal(){ modal.style.display="none"; }
+
+function adicionarEquipamento(){
+  const tipo = equipTipo.value.trim();
+  const fabricante = equipFabricante.value.trim();
+  const modelo = equipModelo.value.trim();
+  const serie = equipSerie.value.trim();
+
+  if(!tipo || !fabricante || !modelo || !serie){
+    alert("Preencha todos os campos do equipamento.");
+    return;
+  }
+
+  equipamentos.push({tipo,fabricante,modelo,serie});
+  atualizarPreview();
+  closeModal();
+}
+
+function atualizarPreview(){
+  const div = document.getElementById("equipamentosPreview");
+  div.innerHTML = "";
+  equipamentos.forEach((e,i)=>{
+    div.innerHTML += `
+      <div class="equip-item">
+        <span><strong>${e.tipo}</strong> | ${e.fabricante} | ${e.modelo} | ${e.serie}</span>
+        <button type="button" class="btn-ghost" onclick="removerEquipamento(${i})" style="width: auto; padding: 6px 12px;">×</button>
+      </div>`;
+  });
+}
+
+function removerEquipamento(i){
+  equipamentos.splice(i,1);
+  atualizarPreview();
+}
+</script>
+
+</body>
+</html>

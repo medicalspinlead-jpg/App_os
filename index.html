@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b74ff" />
+  <meta name="description" content="Sistema de gestão de clientes e equipamentos Medical Spin" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/icon-192.jpg" />
+  <title>Medical Spin - Clientes</title>
+
+  <style>
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --surface: #ffffff;
+      --surface-hover: #f1f5f9;
+      --border: #e2e8f0;
+      --border-focus: #0b74ff;
+      --text-primary: #0f172a;
+      --text-secondary: #64748b;
+      --text-muted: #94a3b8;
+      --accent: #0b74ff;
+      --accent-hover: #0860d9;
+      --accent-light: #eff6ff;
+      --secondary: #64748b;
+      --secondary-hover: #475569;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --success: #10b981;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+      --radius: 12px;
+      --radius-sm: 8px;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+      min-height: 100vh;
+      padding: 24px;
+      margin: 0;
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1 {
+      margin: 0 0 24px 0;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    h1::before {
+      content: '🏥';
+      font-size: 32px;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    label {
+      font-weight: 600;
+      display: block;
+      margin-top: 10px;
+      margin-bottom: 6px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--border);
+      font-size: 16px;
+      transition: all 0.2s ease;
+      background: var(--surface);
+      color: var(--text-primary);
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(11, 116, 255, 0.1);
+    }
+
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+
+    button:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: var(--secondary);
+    }
+
+    .btn-secondary:hover {
+      background: var(--secondary-hover);
+    }
+
+    .muted {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    ul {
+      padding-left: 20px;
+      margin: 12px 0;
+    }
+
+    ul li {
+      margin: 6px 0;
+      color: var(--text-secondary);
+    }
+
+    .cliente-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      gap: 12px;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      transition: background 0.2s ease;
+    }
+
+    .cliente-header:hover {
+      background: var(--surface-hover);
+    }
+
+    .cliente-body {
+      display: none;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 2px solid var(--border);
+    }
+
+    .card.ativo .cliente-body {
+      display: block;
+    }
+
+    .card.ativo {
+      border-left: 4px solid var(--accent);
+      background: linear-gradient(to right, var(--accent-light) 0%, var(--surface) 10%);
+    }
+
+    #modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 9999;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    #modal .modal-content {
+      background: var(--surface);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 700px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .busca-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 16px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .header-actions {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .header-actions button {
+        width: 100%;
+      }
+
+      .cliente-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+    }
+
+    .loading::after {
+      content: '.';
+      animation: dots 1.5s steps(4, end) infinite;
+    }
+
+    @keyframes dots {
+      0%, 20% { content: '.'; }
+      40% { content: '..'; }
+      60%, 100% { content: '...'; }
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Clientes</h1>
+
+<div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+  <strong style="font-size: 16px; color: var(--text-primary);">Gerenciamento de Clientes</strong>
+  
+  <div class="header-actions">
+    <button class="btn-secondary" onclick="historicoOs()">📋 Histórico de OS</button>
+    <button onclick="adicionarCliente()">➕ Adicionar Cliente</button>
+  </div>
+</div>
+
+<div class="card">
+  <label>Buscar cliente</label>
+  <input id="busca" placeholder="Digite para buscar..." />
+
+  <div class="busca-actions">
+    <button onclick="buscar()">🔍 Buscar</button>
+    <button class="btn-secondary" onclick="limparBusca()">Limpar</button>
+  </div>
+</div>
+
+<div id="resultado"></div>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('[v0] Service Worker registered'))
+      .catch(err => console.log('[v0] Service Worker registration failed:', err));
+  });
+}
+
+const WEBHOOK_BUSCA = 'https://n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io/webhook/autocomplete-edit-cliente';
+const WEBHOOK_EDITA = 'https://n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io/webhook/edita-cliente';
+
+window.__clientes = [];
+window.__equipamentosEdicao = [];
+
+async function buscar() {
+  const termo = document.getElementById('busca').value.trim().toLowerCase();
+  const container = document.getElementById('resultado');
+  container.innerHTML = '<div class="loading">Buscando</div>';
+
+  try {
+    const res = await fetch(WEBHOOK_BUSCA, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ termo })
+    });
+
+    const data = await res.json();
+    let clientes = data.resultados || [];
+
+    if (termo) {
+      clientes = clientes.filter(c =>
+        JSON.stringify(c).toLowerCase().includes(termo)
+      );
+    }
+
+    renderizar(clientes);
+  } catch (e) {
+    container.innerHTML = '<p class="muted">Erro ao buscar</p>';
+    console.error(e);
+  }
+}
+
+function limparBusca() {
+  document.getElementById('busca').value = '';
+  buscar();
+}
+
+function renderizar(clientes) {
+  const container = document.getElementById('resultado');
+  container.innerHTML = '';
+
+  if (!clientes.length) {
+    container.innerHTML = '<p class="muted">Nenhum cliente encontrado</p>';
+    return;
+  }
+
+  window.__clientes = clientes;
+
+  clientes.forEach((c, i) => {
+    const div = document.createElement('div');
+    div.className = 'card';
+
+    const equipamentos = (c.equipamentos || [])
+      .map(e =>
+        `<li>${e.tipo_equipamento} - ${e.fabricante} ${e.modelo} (${e.serie})</li>`
+      )
+      .join('') || '<li class="muted">Nenhum equipamento</li>';
+
+    div.innerHTML = `
+      <div class="cliente-header" onclick="toggleCliente(this)">
+        <div>
+          <strong style="font-size: 16px;">${c.nome_fantasia || c.razao_social}</strong><br>
+          <span class="muted">
+            ${c.cidade || ''}${c.uf ? ' - ' + c.uf : ''}
+          </span><br>
+          ${c.telefone ? `<span class="muted">📞 ${c.telefone}</span><br>` : ''}
+          ${c.email ? `<span class="muted">✉️ ${c.email}</span>` : ''}
+        </div>
+        <span class="muted">ID ${c.id_cliente}</span>
+      </div>
+
+      <div class="cliente-body">
+        <ul>${equipamentos}</ul>
+
+        <div style="display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap;">
+          <button onclick="editarCliente(${i})">
+            ✏️ Editar Cliente
+          </button>
+
+          <a
+            href="os.html?cliente=${c.id_cliente}"
+            style="text-decoration:none;"
+          >
+            <button style="background: var(--success);">📝 Gerar OS</button>
+          </a>
+        </div>
+      </div>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+function toggleCliente(header) {
+  header.closest('.card').classList.toggle('ativo');
+}
+
+function editarCliente(index) {
+  const c = window.__clientes[index];
+
+  document.getElementById('edit_id_cliente').value = c.id_cliente || '';
+  document.getElementById('edit_razao_social').value = c.razao_social || '';
+  document.getElementById('edit_nome_fantasia').value = c.nome_fantasia || '';
+  document.getElementById('edit_cnpj').value = c.cnpj || '';
+  document.getElementById('edit_cidade').value = c.cidade || '';
+  document.getElementById('edit_uf').value = c.uf || '';
+  document.getElementById('edit_telefone').value = c.telefone || '';
+  document.getElementById('edit_email').value = c.email || '';
+  document.getElementById('edit_responsavel').value = c.responsavel || '';
+
+  window.__equipamentosEdicao = c.equipamentos || [];
+  document.getElementById('modal').style.display = 'flex';
+}
+
+function fecharModal() {
+  document.getElementById('modal').style.display = 'none';
+}
+
+async function salvarEdicao() {
+  const payload = {
+    evento: 'editar',
+    id_cliente: document.getElementById('edit_id_cliente').value,
+    razao_social: document.getElementById('edit_razao_social').value,
+    nome_fantasia: document.getElementById('edit_nome_fantasia').value,
+    cnpj: document.getElementById('edit_cnpj').value,
+    cidade: document.getElementById('edit_cidade').value,
+    uf: document.getElementById('edit_uf').value,
+    telefone: document.getElementById('edit_telefone').value,
+    email: document.getElementById('edit_email').value,
+    responsavel: document.getElementById('edit_responsavel').value,
+    equipamentos: window.__equipamentosEdicao
+  };
+
+  try {
+    const res = await fetch(WEBHOOK_EDITA, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) throw new Error();
+    fecharModal();
+    buscar();
+    alert('Cliente atualizado');
+  } catch {
+    alert('Erro ao salvar');
+  }
+}
+
+async function deletarCliente() {
+  if (!confirm('Deseja deletar este cliente?')) return;
+
+  const payload = {
+    evento: 'deletar',
+    id_cliente: document.getElementById('edit_id_cliente').value,
+    equipamentos: window.__equipamentosEdicao
+  };
+
+  await fetch(WEBHOOK_EDITA, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+
+  fecharModal();
+  buscar();
+  alert('Cliente deletado');
+}
+
+function adicionarCliente() {
+  window.location.href = 'cliente.html';
+}
+
+function historicoOs() {
+  window.location.href = 'historico.html';
+}
+
+document.addEventListener('DOMContentLoaded', buscar);
+</script>
+
+<div id="modal">
+  <div class="modal-content">
+    <h3 style="margin-top: 0; color: var(--text-primary);">Editar Cliente</h3>
+
+    <input type="hidden" id="edit_id_cliente" />
+
+    <label>Razão Social</label>
+    <input id="edit_razao_social" />
+
+    <label>Nome Fantasia</label>
+    <input id="edit_nome_fantasia" />
+
+    <label>CNPJ</label>
+    <input id="edit_cnpj" />
+
+    <label>Cidade</label>
+    <input id="edit_cidade" />
+
+    <label>UF</label>
+    <input id="edit_uf" />
+
+    <label>Telefone</label>
+    <input id="edit_telefone" />
+
+    <label>Email</label>
+    <input id="edit_email" />
+
+    <label>Responsável</label>
+    <input id="edit_responsavel" />
+
+    <div style="display:flex;justify-content:space-between;gap:10px;margin-top:20px;flex-wrap:wrap;">
+      <button onclick="deletarCliente()" style="background: var(--danger);">🗑️ Deletar</button>
+      <div style="display:flex;gap:10px;">
+        <button onclick="fecharModal()" class="btn-secondary">Cancelar</button>
+        <button onclick="salvarEdicao()">💾 Salvar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
