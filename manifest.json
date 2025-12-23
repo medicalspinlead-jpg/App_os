@@ -1,6 +1,6 @@
 {
   "name": "Medical Spin - Gestão de OS",
-  "short_name": "Medical Spin",
+  "short_name": "Medical Spin- Gestão de OS",
   "description": "Sistema de gestão de clientes e ordens de serviço para Medical Spin",
   "start_url": "/index.html",
   "display": "standalone",
@@ -15,7 +15,7 @@
       "purpose": "any maskable"
     },
     {
-      "src": "/favicon.png",
+      "src": "/icon-512.jpg",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

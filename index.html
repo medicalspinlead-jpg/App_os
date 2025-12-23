@@ -6,9 +6,11 @@
   <meta name="theme-color" content="#0b74ff" />
   <meta name="description" content="Sistema de gestão de clientes e equipamentos Medical Spin" />
   <link rel="manifest" href="/manifest.json" />
-  <link rel="icon" type="image/png" sizes="192x192" href="/favicon.png" />
-  <link rel="apple-touch-icon" href="/icon-192.jpg" />
-  <title>Medical Spin - Clientes</title>
+  <link rel="icon" type="image/png" sizes="192x192" href="/images/favicon.png" />
+  <link rel="apple-touch-icon" href="/images/favicon.png" />
+  <title>Medical Spin - Dashboard</title>
+  <!-- Added Chart.js CDN for charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
 
   <style>
     :root {
@@ -36,6 +38,11 @@
       --radius: 12px;
       --radius-sm: 8px;
       --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      /* Added color variables for stats cards */
+      --clientes-color: #0b74ff;
+      --clientes-bg: linear-gradient(135deg, #0b74ff 0%, #3b82f6 100%);
+      --os-color: #10b981;
+      --os-bg: linear-gradient(135deg, #10b981 0%, #059669 100%);
     }
 
     * {
@@ -80,6 +87,141 @@
     .card:hover {
       transform: translateY(-2px);
       box-shadow: var(--shadow-lg);
+    }
+
+    /* Updated styles for stats grid - 2 cards on top */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
+      border: none;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient);
+    }
+
+    .stat-card.clientes::before {
+      background: var(--clientes-bg);
+    }
+
+    .stat-card.os::before {
+      background: var(--os-bg);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    .stat-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      background: var(--icon-bg);
+    }
+
+    .stat-card.clientes .stat-icon {
+      background: linear-gradient(135deg, rgba(11, 116, 255, 0.1) 0%, rgba(59, 130, 246, 0.15) 100%);
+    }
+
+    .stat-card.os .stat-icon {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.15) 100%);
+    }
+
+    .stat-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--value-color);
+      line-height: 1;
+      margin: 8px 0;
+    }
+
+    .stat-card.clientes .stat-value {
+      color: var(--clientes-color);
+    }
+
+    .stat-card.os .stat-value {
+      color: var(--os-color);
+    }
+
+    .stat-description {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    /* Updated charts grid for bottom section */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .chart-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .chart-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .chart-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 280px;
     }
 
     label {
@@ -238,6 +380,158 @@
       gap: 10px;
     }
 
+    /* ===== INSTALL BANNER (FIX DEFINITIVO MOBILE) ===== */
+
+.install-banner {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  background: linear-gradient(135deg, var(--accent) 0%, #0860d9 100%);
+  color: white;
+
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 10000;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  align-items: stretch;
+  text-align: center;
+
+  transform: translateY(120%);
+  transition: transform 0.35s ease;
+  will-change: transform;
+}
+
+.install-banner.show {
+  transform: translateY(0);
+}
+
+
+    .install-banner h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .install-banner p {
+      margin: 0;
+      font-size: 14px;
+      opacity: 0.95;
+    }
+
+    .install-banner-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.install-banner-actions button {
+  width: 100%;
+  padding: 12px;
+  font-size: 15px;
+}
+
+
+    .install-banner .btn-install {
+      background: white;
+      color: var(--accent);
+    }
+
+    .install-banner .btn-dismiss {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    /* ===== FIX BANNER PWA MOBILE ===== */
+
+.install-banner {
+  max-width: 100%;
+  box-sizing: border-box;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@media (max-height: 600px) {
+  .install-banner h3 {
+    font-size: 15px;
+  }
+
+  .install-banner p {
+    font-size: 13px;
+    line-height: 1.3;
+  }
+}
+
+
+
+    .success-animation {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      background: white;
+      padding: 40px;
+      border-radius: var(--radius);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      z-index: 10001;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 16px;
+    }
+
+    .success-animation.show {
+      display: flex;
+      animation: successPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    }
+
+    @keyframes successPop {
+      0% {
+        transform: translate(-50%, -50%) scale(0) rotate(-180deg);
+        opacity: 0;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+        opacity: 1;
+      }
+    }
+
+    .success-animation .checkmark {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--success);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      animation: pulse 0.6s ease;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .success-animation h3 {
+      margin: 0;
+      font-size: 24px;
+      color: var(--text-primary);
+    }
+
+    .success-animation p {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
     @media (max-width: 600px) {
       body {
         padding: 16px;
@@ -260,6 +554,42 @@
         flex-direction: column;
         align-items: flex-start;
       }
+
+      .install-banner {
+        padding: 16px;
+      }
+
+      .install-banner h3 {
+        font-size: 16px;
+      }
+
+      .install-banner-actions {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .install-banner-actions button {
+        width: 100%;
+      }
+
+      /* Responsive adjustments for mobile */
+      .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .stat-value {
+        font-size: 40px;
+      }
+
+      .charts-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .chart-container {
+        height: 220px;
+      }
     }
 
     .loading {
@@ -278,12 +608,93 @@
       40% { content: '..'; }
       60%, 100% { content: '...'; }
     }
+    /* ===== FIX RESPONSIVIDADE GRÁFICOS ===== */
+
+/* Garante que o canvas nunca estoure o card */
+.chart-container {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.chart-container canvas {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+/* Evita quebra horizontal em telas pequenas */
+.charts-grid {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Mobile real (até 480px) */
+@media (max-width: 480px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-card {
+    padding: 16px;
+  }
+
+  .chart-title {
+    font-size: 16px;
+    flex-wrap: wrap;
+    line-height: 1.3;
+  }
+
+  .chart-container {
+    height: 200px;
+  }
+}
+
   </style>
 </head>
 
 <body>
 
-<h1>Clientes</h1>
+<h1>Dashboard Medical Spin</h1>
+
+<!-- New stats cards layout - Total Clientes and Total OS on top -->
+<div class="stats-grid">
+  <div class="stat-card clientes">
+    <div class="stat-card-header">
+      <div class="stat-icon">👥</div>
+      <div class="stat-label">Total de Clientes</div>
+    </div>
+    <div class="stat-value" id="totalClientes">-</div>
+    <div class="stat-description">Clientes cadastrados no sistema</div>
+  </div>
+
+  <div class="stat-card os">
+    <div class="stat-card-header">
+      <div class="stat-icon">📋</div>
+      <div class="stat-label">Total de OS</div>
+    </div>
+    <div class="stat-value" id="totalOS">-</div>
+    <div class="stat-description">Ordens de serviço geradas</div>
+  </div>
+</div>
+
+<!-- Charts section below - Clientes chart and Clientes por Estado -->
+<div class="charts-grid">
+  <div class="chart-card">
+    <div class="chart-title">📊 Distribuição de Clientes/Equipamentos</div>
+    <div class="chart-container">
+      <canvas id="chartClientes"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title">🗺️ Clientes por Estado</div>
+    <div class="chart-container">
+      <canvas id="chartEstados"></canvas>
+    </div>
+  </div>
+</div>
 
 <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
   <strong style="font-size: 16px; color: var(--text-primary);">Gerenciamento de Clientes</strong>
@@ -306,6 +717,21 @@
 
 <div id="resultado"></div>
 
+<div class="install-banner" id="installBanner">
+  <h3>📲 Instale o Medical Spin Dashboard</h3>
+  <p>Acesse o sistema rapidamente sem abrir o navegador. Instale nosso app agora!</p>
+  <div class="install-banner-actions">
+    <button class="btn-install" onclick="installPWA()">Instalar Agora</button>
+    <button class="btn-dismiss" onclick="dismissInstall()">Agora Não</button>
+  </div>
+</div>
+
+<div class="success-animation" id="successAnimation">
+  <div class="checkmark">✓</div>
+  <h3>Sucesso!</h3>
+  <p id="successMessage">Operação concluída com sucesso</p>
+</div>
+
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -317,9 +743,200 @@ if ('serviceWorker' in navigator) {
 
 const WEBHOOK_BUSCA = 'https://n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io/webhook/autocomplete-edit-cliente';
 const WEBHOOK_EDITA = 'https://n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io/webhook/edita-cliente';
+const WEBHOOK_OS = 'https://n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io/webhook/autocomplete-os-history';
 
 window.__clientes = [];
 window.__equipamentosEdicao = [];
+let chartClientes = null;
+let chartEstados = null;
+
+async function carregarGraficos() {
+  try {
+    const resClientes = await fetch(WEBHOOK_BUSCA, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ termo: '' })
+    });
+    const dataClientes = await resClientes.json();
+    const clientes = dataClientes.resultados || [];
+
+    const resOS = await fetch(WEBHOOK_OS, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ termo: '' })
+    });
+    const dataOS = await resOS.json();
+    const listaOS = dataOS.os || [];
+
+    document.getElementById('totalClientes').textContent = clientes.length;
+    document.getElementById('totalOS').textContent = listaOS.length;
+
+    calcularDistribuicaoClientes(clientes);
+    calcularClientesPorEstado(clientes);
+
+  } catch (error) {
+    console.error('[v0] Erro ao carregar gráficos:', error);
+    document.getElementById('totalClientes').textContent = '0';
+    document.getElementById('totalOS').textContent = '0';
+  }
+}
+
+function calcularDistribuicaoClientes(clientes) {
+  let ate1Equipamento = 0;
+  let maisDe1Equipamento = 0;
+
+  clientes.forEach(cliente => {
+    const qtdEquipamentos = cliente.equipamentos ? cliente.equipamentos.length : 0;
+    if (qtdEquipamentos <= 1) {
+      ate1Equipamento++;
+    } else {
+      maisDe1Equipamento++;
+    }
+  });
+
+  const ctx = document.getElementById('chartClientes');
+  if (chartClientes) {
+    chartClientes.destroy();
+  }
+
+  chartClientes = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Até 1 Equipamento', 'Mais de 1 Equipamento'],
+      datasets: [{
+        data: [ate1Equipamento, maisDe1Equipamento],
+        backgroundColor: [
+          '#0b74ff',
+          '#10b981'
+        ],
+        borderWidth: 0,
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            padding: 20,
+            font: {
+              size: 13,
+              weight: '600'
+            },
+            color: '#64748b',
+            usePointStyle: true,
+            pointStyle: 'circle'
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(15, 23, 42, 0.9)',
+          padding: 12,
+          borderRadius: 8,
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          displayColors: true,
+          callbacks: {
+            label: function(context) {
+              const label = context.label || '';
+              const value = context.parsed || 0;
+              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+              const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+              return `${label}: ${value} (${percentage}%)`;
+            }
+          }
+        }
+      },
+      cutout: '65%'
+    }
+  });
+}
+
+function calcularClientesPorEstado(clientes) {
+  const estados = {};
+
+  clientes.forEach(cliente => {
+    const uf = cliente.uf || 'Não informado';
+    estados[uf] = (estados[uf] || 0) + 1;
+  });
+
+  const estadosOrdenados = Object.entries(estados)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10);
+
+  const labels = estadosOrdenados.map(e => e[0]);
+  const valores = estadosOrdenados.map(e => e[1]);
+
+  const cores = [
+    '#0b74ff', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe',
+    '#dbeafe', '#0ea5e9', '#0284c7', '#0369a1', '#075985'
+  ];
+
+  const ctx = document.getElementById('chartEstados');
+  if (chartEstados) {
+    chartEstados.destroy();
+  }
+
+  chartEstados = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Clientes',
+        data: valores,
+        backgroundColor: cores,
+        borderRadius: 8,
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          backgroundColor: 'rgba(15, 23, 42, 0.9)',
+          padding: 12,
+          borderRadius: 8,
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          displayColors: false
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1,
+            color: '#64748b',
+            font: {
+              size: 12
+            }
+          },
+          grid: {
+            color: '#e2e8f0',
+            drawBorder: false
+          }
+        },
+        x: {
+          ticks: {
+            color: '#64748b',
+            font: {
+              size: 12,
+              weight: '600'
+            }
+          },
+          grid: {
+            display: false
+          }
+        }
+      }
+    }
+  });
+}
 
 async function buscar() {
   const termo = document.getElementById('busca').value.trim().toLowerCase();
@@ -460,7 +1077,8 @@ async function salvarEdicao() {
     if (!res.ok) throw new Error();
     fecharModal();
     buscar();
-    alert('Cliente atualizado');
+    carregarGraficos();
+    showSuccessAnimation('Cliente atualizado com sucesso!');
   } catch {
     alert('Erro ao salvar');
   }
@@ -483,7 +1101,8 @@ async function deletarCliente() {
 
   fecharModal();
   buscar();
-  alert('Cliente deletado');
+  carregarGraficos();
+  showSuccessAnimation('Cliente deletado com sucesso!');
 }
 
 function adicionarCliente() {
@@ -494,7 +1113,57 @@ function historicoOs() {
   window.location.href = 'historico.html';
 }
 
-document.addEventListener('DOMContentLoaded', buscar);
+function installPWA() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        showSuccessAnimation('App instalado com sucesso!');
+      }
+      deferredPrompt = null;
+      installBanner.classList.remove('show');
+    });
+  }
+}
+
+function dismissInstall() {
+  localStorage.setItem('installDismissed', Date.now().toString());
+  installBanner.classList.remove('show');
+}
+
+function showSuccessAnimation(message) {
+  const animation = document.getElementById('successAnimation');
+  const messageEl = document.getElementById('successMessage');
+  messageEl.textContent = message;
+  animation.classList.add('show');
+  
+  setTimeout(() => {
+    animation.classList.remove('show');
+  }, 3000);
+}
+
+let deferredPrompt;
+const installBanner = document.getElementById('installBanner');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  
+  setTimeout(() => {
+    const lastDismissed = localStorage.getItem('installDismissed');
+    const daysSinceDismissed = lastDismissed ? 
+      (Date.now() - parseInt(lastDismissed)) / (1000 * 60 * 60 * 24) : 999;
+    
+    if (daysSinceDismissed > 7) {
+      installBanner.classList.add('show');
+    }
+  }, 3000);
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  buscar();
+  carregarGraficos();
+});
 </script>
 
 <div id="modal">

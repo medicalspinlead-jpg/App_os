@@ -7,7 +7,7 @@
 <meta name="description" content="Cadastro de cliente Medical Spin" />
 <link rel="manifest" href="/manifest.json" />
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon.png" />
-<link rel="apple-touch-icon" href="/icon-192.jpg" />
+<link rel="apple-touch-icon" href="/favicon.png" />
 <title>Cadastro de Cliente - Medical Spin</title>
 
 <style>
@@ -223,6 +223,69 @@ button.btn-ghost:hover {
   pointer-events: none;
 }
 
+.success-animation {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  background: var(--surface);
+  padding: 40px;
+  border-radius: var(--radius);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  z-index: 10001;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+}
+
+.success-animation.show {
+  display: flex;
+  animation: successPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+@keyframes successPop {
+  0% {
+    transform: translate(-50%, -50%) scale(0) rotate(-180deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.success-animation .checkmark {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  color: white;
+  animation: pulse 0.6s ease;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.success-animation h3 {
+  margin: 0;
+  font-size: 24px;
+  color: var(--text-primary);
+}
+
+.success-animation p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
 @media (max-width: 600px) {
   body {
     padding: 16px 12px;
@@ -282,6 +345,12 @@ button.btn-ghost:hover {
   </div>
 </div>
 
+<div class="success-animation" id="successAnimation">
+  <div class="checkmark">✓</div>
+  <h3>Sucesso!</h3>
+  <p id="successMessage">Operação concluída com sucesso</p>
+</div>
+
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -294,6 +363,17 @@ if ('serviceWorker' in navigator) {
 let equipamentos = [];
 const form = document.getElementById("equipForm");
 const validator = document.getElementById("equipValidator");
+
+function showSuccessAnimation(message) {
+  const animation = document.getElementById('successAnimation');
+  const messageEl = document.getElementById('successMessage');
+  messageEl.textContent = message;
+  animation.classList.add('show');
+  
+  setTimeout(() => {
+    animation.classList.remove('show');
+  }, 3000);
+}
 
 form.addEventListener("submit", async e => {
   e.preventDefault();
@@ -318,7 +398,7 @@ form.addEventListener("submit", async e => {
     body: JSON.stringify(data)
   });
 
-  alert("Cliente cadastrado com sucesso!");
+  showSuccessAnimation("Cliente cadastrado com sucesso!");
   form.reset();
   equipamentos = [];
   atualizarPreview();
