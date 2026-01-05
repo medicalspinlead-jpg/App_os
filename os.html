@@ -874,30 +874,79 @@ const lista = listaBruta
     for (let i = 0; i < fileList.length; i++) {
       const file = fileList[i];
 
-      promises.push(
-        new Promise((resolve, reject) => {
-          const reader = new FileReader();
+      // === SE FOR IMAGEM → CONVERTE PARA JPG ===
+      if (file.type.startsWith("image/")) {
+        promises.push(
+          new Promise((resolve, reject) => {
+            const reader = new FileReader();
 
-          reader.onerror = () => reject("Erro ao ler arquivo");
+            reader.onerror = () => reject("Erro ao ler imagem");
 
-          reader.onload = () => {
-            const base64 = reader.result.split(",")[1];
+            reader.onload = () => {
+              const img = new Image();
 
-            resolve({
-              nome: file.name,
-              tipo: file.type,
-              tamanho: file.size,
-              base64
-            });
-          };
+              img.onload = () => {
+                const canvas = document.createElement("canvas");
+                canvas.width = img.width;
+                canvas.height = img.height;
 
-          reader.readAsDataURL(file);
-        })
-      );
+                const ctx = canvas.getContext("2d");
+
+                // fundo branco (evita transparência virar preto)
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.drawImage(img, 0, 0);
+
+                const jpegBase64 = canvas
+                  .toDataURL("image/jpeg", 0.9)
+                  .split(",")[1];
+
+                resolve({
+                  nome: file.name.replace(/\.[^/.]+$/, "") + ".jpg",
+                  tipo: "image/jpeg",
+                  tamanho: jpegBase64.length,
+                  base64: jpegBase64
+                });
+              };
+
+              img.onerror = () => reject("Erro ao carregar imagem");
+
+              img.src = reader.result;
+            };
+
+            reader.readAsDataURL(file);
+          })
+        );
+
+      } else {
+        // === QUALQUER OUTRO ARQUIVO → NÃO MUDA ===
+        promises.push(
+          new Promise((resolve, reject) => {
+            const reader = new FileReader();
+
+            reader.onerror = () => reject("Erro ao ler arquivo");
+
+            reader.onload = () => {
+              const base64 = reader.result.split(",")[1];
+
+              resolve({
+                nome: file.name,
+                tipo: file.type,
+                tamanho: file.size,
+                base64
+              });
+            };
+
+            reader.readAsDataURL(file);
+          })
+        );
+      }
     }
 
     return Promise.all(promises);
   }
+
 
   function generateJSON(formElement) {
   const formData = new FormData(formElement);
